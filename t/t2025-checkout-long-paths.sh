@@ -99,13 +99,14 @@ test_expect_success SHORTABSPATH 'clean up path close to MAX_PATH' '
 	mkdir -p $DEEP
 	# Now create the critical $SUB4 that, moved under DEEP, triggers the bug.
 	# Moreover, take also variants with length +-2, to check values near MAX_PATH:
-	for SUB4A in "${SUB4}xx" "${SUB4}x" "${SUB4}" "${SUB4%?}" "${SUB4%??}"
+	#for SUB4A in "${SUB4}xx" "${SUB4}x" "${SUB4}" "${SUB4%?}" "${SUB4%??}"
+	for SUB4A in "${SUB4}"
 	do
 		# $SUB4A now represents the problem directory:
 		# create it, and populate it witha subtree and a regular file
 		# also create a regular file whose name is the same length as $SUB4A
 		mkdir -p "$SUB4A/$SUB5"
-		touch "$SUB4A/$SUB5/package.json" "$SUB4A/a_file" "${SUB4A%??}.c"
+		touch "$SUB4A/$SUB5/package.json"  # "$SUB4A/a_file" "${SUB4A%??}.c"
 	done
 	# move the whole tree under DEEP
 	mv "${SUB4%%/*}" "$DEEP"
