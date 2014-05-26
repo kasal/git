@@ -57,23 +57,28 @@ test_expect_success cleanup '
 
 # check that the template used in the test won't be too long:
 abspath="$(pwd -W)"/testdir
-test ${#abspath} -gt 240 ||
+test ${#abspath} -gt 230 ||
 test_set_prereq SHORTABSPATH
 
 test_expect_success SHORTABSPATH 'clean up path close to MAX_PATH' '
-	p=/123456789abcdef/123456789abcdef/123456789abcdef/123456789abcdef &&
+	p=/123456789abcdef/123456789abcdef/123456789abcdef/123456789abc/ef &&
 	p=y$p$p$p$p &&
-	subdir="x$(echo "$p" | tail -c $((256 - ${#abspath})))" &&
-	# Now, $abspath/$subdir has exactly 257 characters, and is inside CWD
+	subdir="x$(echo "$p" | tail -c $((253 - ${#abspath})))" &&
+	# Now, $abspath/$subdir has exactly 254 characters, and is inside CWD
 	p2="$abspath/$subdir" &&
-	test 257 = ${#p2} &&
+	test 254 = ${#p2} &&
 
-	# Be careful to overcome path limitations of the MSys tools
-	subdir2=${subdir#????????????????????????????????*/} &&
-	subdir1="$abspath"/${subdir%/$subdir2} &&
+	# Be careful to overcome path limitations of the MSys tools and split
+	# the $subdir into two parts. ($subdir2 has to contain 16 chars and a
+	# slash somewhere following; that is why we asked for abspath <= 230 and
+	# why we placed a slash near the end of the $subdir template.)
+	subdir2=${subdir#????????????????*/} &&
+	subdir1=testdir/${subdir%/$subdir2} &&
 	mkdir -p "$subdir1" &&
 	i=0 &&
-	while test $i -le 10
+	# The most important case is when absolute path is 258 characters long,
+	# and that will be when i == 4.
+	while test $i -le 7
 	do
 		mkdir -p $subdir2 &&
 		touch $subdir2/one-file &&
