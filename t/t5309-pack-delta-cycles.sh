@@ -56,13 +56,13 @@ test_expect_success 'index-pack detects REF_DELTA cycles' '
 	test_must_fail git index-pack --fix-thin --stdin <cycle.pack
 '
 
-test_expect_failure 'failover to an object in another pack' '
+test_expect_failure NOT_MINGW 'failover to an object in another pack' '
 	clear_packs &&
 	git index-pack --stdin <ab.pack &&
 	git index-pack --stdin --fix-thin <cycle.pack
 '
 
-test_expect_failure 'failover to a duplicate object in the same pack' '
+test_expect_failure NOT_MINGW 'failover to a duplicate object in the same pack' '
 	clear_packs &&
 	{
 		pack_header 3 &&
